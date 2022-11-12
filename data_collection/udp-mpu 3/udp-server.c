@@ -64,7 +64,7 @@
 
 #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 #define MAX_PAYLOAD_LEN 120
-#define FREQUENCY 160 // in Hz
+#define FREQUENCY 256 // in Hz
 #define READING_TIME 2 // in seconds
 #define BYTES_PER_PACKET 64 // make sure READING_TIME*FREQUENCY is dividable by BYTES_PER_PACKET
 #define TIME_BETWEEN_PACKETS 1000 // in milliseconds
