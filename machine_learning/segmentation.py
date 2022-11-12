@@ -72,6 +72,9 @@ def segment_heartbeats(heartbeat_tuples):
             candidate_set = sorted(local_maxima_values, key=lambda x: x[1], reverse=True) 
             # print(candidate_set)
 
+
+            # *** iterate thru local maxima values and remove the ones that are within 200ms of a peak in the candidate_set instead ???****
+
             # if the distance is less than 200ms to the current candidate, remove the peak from candidate_set
             for i in range(len(candidate_set)):
                 for j in range(i+1, len(candidate_set)):
@@ -99,7 +102,7 @@ def segment_heartbeats(heartbeat_tuples):
             print("Shortest distance: ", shortest_distance)
 
             # sort the candidate_set by ascending time values
-            #  candidate_set = sorted(candidate_set, key=lambda x: x[0])
+            # candidate_set = sorted(candidate_set, key=lambda x: x[0])
             # print(candidate_set)
 
             
