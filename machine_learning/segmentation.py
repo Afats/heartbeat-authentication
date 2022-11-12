@@ -9,7 +9,7 @@ import csv
 import matplotlib.pyplot as plt
 
 #read in the data
-with open('heartvals_2secs.csv', 'r') as f:
+with open('../heartbeat_values/heartvals_2secs.csv', 'r') as f:
     reader = csv.reader(f)
     heartbeat = list(reader)
     #print(heartbeat)
