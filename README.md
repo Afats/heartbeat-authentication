@@ -1,4 +1,4 @@
-# heartbeat-authentication
+# Heartbeat Authentication
 
 Base files added. 
 
