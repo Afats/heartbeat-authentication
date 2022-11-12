@@ -89,7 +89,7 @@ def segment_heartbeats(heartbeat_tuples):
 
 
             # find the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
-            shortest_distance = 1000
+            shortest_distance = 0.5
             for i in range(len(candidate_set)):
                 for j in range(i+1, len(candidate_set)):
                     if ((candidate_set[i][0] - candidate_set[j][0]) < shortest_distance and (candidate_set[i][0] - candidate_set[j][0]) > 0.2):
