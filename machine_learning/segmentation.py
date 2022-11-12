@@ -2,7 +2,7 @@
 # step 1 - read in the data and divide into 2 second chunks
 # step 2 - identity the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
 # This performs well in trying to find the AO and RF as AO to RF intervals are larger than 200ms
-# Now that we have obtained the AO to RF distance, we simply multiply 0.5 to it to obtain the ATC to AO distance, from that we can obtain a full heartbeat cycle.
+# Now that we have obtained the AO to RF distance, we multiply 0.5 to it to obtain the ATC to AO distance, from that we can obtain a full heartbeat cycle.
 
 #import heartbeatvals.csv
 import csv
