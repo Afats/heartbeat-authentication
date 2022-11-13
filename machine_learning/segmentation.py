@@ -64,6 +64,8 @@ def segment_heartbeats(heartbeat_tuples):
             #print(local_maxima_values)   
 
 
+            # *** review candiate set adding process, and peak removing process ***
+
             # We then perform a pruning algorithm to remove noisy peaks. 
             # Starting from the highest peaks, we add the peaks into a candidate set one-by-one in the descending order of their amplitudes. 
             # If the current peak is within a time interval of 200ms to one of the candidate peaks in the set, the current peak is removed. 
