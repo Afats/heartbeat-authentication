@@ -9,6 +9,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import argrelextrema
+# from sklearn import preprocessing
 
 #read in the data
 with open('../heartbeat_values/heartvals_2secs.csv', 'r') as f:
@@ -53,6 +54,23 @@ heartbeat_tuples = create_heartbeat_tuples(heartbeat_2secs)
 # print(heartbeat_tuples)
 
 
+# mark AO and RF on the plotted graph
+# mark start and end of heartbeat cycle
+def plot_segmented_heartbeats(heartbeat_tuples, ao_tuple, rf_tuple, closest_peak_distance):
+    x = [x[0] for x in heartbeat_tuples]
+    y = [x[1] for x in heartbeat_tuples]
+    plt.plot(x, y)
+    plt.title("Heartbeat z-values for 2 seconds -- segmented")
+    plt.xlabel("Time (seconds)")
+    plt.ylabel("Acceleration (g)")
+    plt.scatter(ao_tuple[0], ao_tuple[1], color='red')
+    plt.scatter(rf_tuple[0], rf_tuple[1], color='green')
+    plt.axvline(x=0.5*closest_peak_distance, color='black')
+    plt.axvline(x=1.5*closest_peak_distance, color='black')
+    plt.show()
+
+
+
 #step 2 - identify the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
 def segment_heartbeats(heartbeat_tuples):   
         # find the local maximum y values of heartbeat_tuples  ***(within a x range of 0.5 seconds ???)***
@@ -75,7 +93,7 @@ def segment_heartbeats(heartbeat_tuples):
             # print(candidate_set)
 
 
-            # *** iterate thru local maxima values and remove the ones that are within 200ms of a peak in the candidate_set instead ???****
+            # *** iterate thru local maxima values and remove the ones in local_maxima that are within 200ms of a peak in the candidate_set instead ???****
 
             # if the distance is less than 200ms to the current candidate, remove the peak from candidate_set
             for i in range(len(candidate_set)):
@@ -121,6 +139,49 @@ def segment_heartbeats(heartbeat_tuples):
            
 
 segment_heartbeats(heartbeat_tuples)   
+print("\n\n-----------------------------------\n\n")
+# identify the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
+def segment_heartbeats2(heartbeat_tuples):
+
+    all_heartvalues = []
+    # identify the highest peak (y value) in each heartbeat_tuple_2secs
+    for heartbeat_tuple_2secs in heartbeat_tuples:
+        highest_peak = max(heartbeat_tuple_2secs, key=lambda x: x[1])
+
+        print("Highest peak: ", highest_peak)
+
+
+        # find closest peak to the highest peak that's greater than 200ms
+        closest_peak_distance = 0.5
+        closest_peak = 0
+        for heartbeat_tuple_2secs in heartbeat_tuples:
+            for i in range(len(heartbeat_tuple_2secs)):
+                if (heartbeat_tuple_2secs[i][0] - highest_peak[0] > 0.2 and heartbeat_tuple_2secs[i][0] - highest_peak[0] < closest_peak_distance):
+                    closest_peak_distance = heartbeat_tuple_2secs[i][0] - highest_peak[0]
+                    closest_peak = heartbeat_tuple_2secs[i]
+        
+        print("Closest peak: ", closest_peak)
+        print("Closest peak distance: ", closest_peak_distance)
+        print("\n\n\n")
+
+        # plot_segmented_heartbeats(heartbeat_tuple_2secs, highest_peak, closest_peak, closest_peak_distance)
+
+        # return array of heartbeat_tuple_2secs values in the range: 0.5*closest_peak_distance - 1.5*closest_peak_distance
+
+        heartvalues = []
+        for i in range(len(heartbeat_tuple_2secs)):
+            if (heartbeat_tuple_2secs[i][0] > 0.5*closest_peak_distance and heartbeat_tuple_2secs[i][0] < 1.5*closest_peak_distance):
+                heartvalues.append(heartbeat_tuple_2secs[i])
+
+        all_heartvalues.append(heartvalues)
+    return all_heartvalues
+
+
+segmented_heartbeats = segment_heartbeats2(heartbeat_tuples)
+
+for segmented_heartbeat in segmented_heartbeats:
+    print(segmented_heartbeat)
+    print("\n\n")
 
 
 
