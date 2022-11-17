@@ -54,6 +54,17 @@ heartbeat_tuples = create_heartbeat_tuples(heartbeat_2secs)
 # print(heartbeat_tuples)
 
 
+# mark the highest peak and the closest peak on the plotted graph
+def plot_segmented_heartbeats(heartbeat_tuples, ao, rf):
+    x = [x[0] for x in heartbeat_tuples]
+    y = [x[1] for x in heartbeat_tuples]
+    plt.plot(x, y)
+    plt.scatter(ao[0], ao[1], color='red')
+    plt.scatter(rf[0], rf[1], color='green')
+    plt.show()
+
+
+
 #step 2 - identify the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
 def segment_heartbeats(heartbeat_tuples):   
         # find the local maximum y values of heartbeat_tuples  ***(within a x range of 0.5 seconds ???)***
@@ -147,16 +158,6 @@ def segment_heartbeats2(heartbeat_tuples):
         plot_segmented_heartbeats(heartbeat_tuple_2secs, highest_peak, closest_peak)
 
 segment_heartbeats2(heartbeat_tuples)
-
-# mark the highest peak and the closest peak on the plotted graph
-def plot_segmented_heartbeats(heartbeat_tuples, ao, rf):
-    x = [x[0] for x in heartbeat_tuples]
-    y = [x[1] for x in heartbeat_tuples]
-    plt.plot(x, y)
-    plt.scatter(ao[0], ao[1], color='red')
-    plt.scatter(rf[0], rf[1], color='green')
-    plt.show()
-
 
 
 
