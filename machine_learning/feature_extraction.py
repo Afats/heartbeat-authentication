@@ -11,6 +11,34 @@ from segmentation import segmented_heartbeats
 import matplotlib.pyplot as plt
 import numpy as np
 
+def normalize_heartbeats(segmented_heartbeats):
+    # step 1: normalize the SCG signals of each heartbeat cycle 
+    # by dividing with the maximum amplitude of the cycle.
+
+    # get the max len among all the heartbeat cycles
+    max_len = 0
+    for heartbeat_cycle in segmented_heartbeats:
+        if (len(heartbeat_cycle) > max_len):
+            max_len = len(heartbeat_cycle)
+
+    
+
+    for heartbeat_cycle in segmented_heartbeats:
+
+        # get max amplitude
+        max_amplitude = max([x[1] for x in heartbeat_cycle])
+
+        # normalize the heartbeat cycle
+        for i in range(len(heartbeat_cycle)):
+            heartbeat_cycle[i] = (heartbeat_cycle[i][0], heartbeat_cycle[i][1]/max_amplitude)
+        
+        # append zeros at the end of each heartbeat cycle to guarantee the same duration
+        if (len(heartbeat_cycle) < max_len):
+            heartbeat_cycle = heartbeat_cycle + [(heartbeat_cycle[-1][0] + 0.001, 0) for i in range(max_len - len(heartbeat_cycle))]
+
+
+    return segmented_heartbeats
+
 
 def plot_heartbeat_cycle(heartbeat_cycle, title):
     x = [x[0] for x in heartbeat_cycle]
@@ -36,23 +64,32 @@ def plot_heartbeat_cycle_dwt(heartbeat_cycle, heartbeat_timeline, title):
     plt.ylabel("Acceleration (m/s^2)")
     plt.show()
 
-for segmented_heartbeat in segmented_heartbeats:
-    print("Segmented heartbeat: ", segmented_heartbeat)
-    plot_heartbeat_cycle(segmented_heartbeat, "Raw Heartbeat Cycle")
-    
-    # By iteratively applying the wavelet decomposition on the approximation coefficients, 
-    # the DWT can separate the original signals into multiple levels 
-    # that contain components in different frequency ranges
 
-    # get all scg values from the heartbeat cycle
-    segmented_scgs = [x[1] for x in segmented_heartbeat]
 
-    for i in range (1, 6): 
-        coeffs = pywt.dwt(segmented_scgs, 'db1')   
-        cA2, cD2 = coeffs
-        plot_heartbeat_cycle_dwt(cA2, segmented_heartbeat, "Level " + str(i))
-        segmented_scgs = cA2
+def dwt_decompose(segmented_heartbeats):
+
+    normalized_heartbeats = normalize_heartbeats(segmented_heartbeats)
+
+    for n_heartbeat in normalized_heartbeats:
+
+        print("Normalized heartbeat: ", n_heartbeat)
+        plot_heartbeat_cycle(n_heartbeat, "Raw Normalized Heartbeat Cycle")
         
+        # By iteratively applying the wavelet decomposition on the approximation coefficients, 
+        # the DWT can separate the original signals into multiple levels 
+        # that contain components in different frequency ranges
+
+        # get all scg values from the heartbeat cycle
+        n_scgs = [x[1] for x in n_heartbeat]
+
+        for i in range (1, 6): 
+            coeffs = pywt.dwt(n_scgs, 'db1')   
+            cA, cD = coeffs
+            print("\n\ncA: ", cA)
+            print("-----\n")
+            plot_heartbeat_cycle_dwt(cA, n_heartbeat, "Level " + str(i))
+            n_scgs = cA
+            
 
 
 
