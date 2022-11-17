@@ -12,9 +12,14 @@ import pywt
 from segmentation import segmented_heartbeats
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.interpolate
 
 def normalize_heartbeats(segmented_heartbeats):
-    # step 1: normalize the SCG signals of each heartbeat cycle 
+
+    # step 0: linear interpolation algorithm 
+    # to normalize the accelerometer readings to a standard sampling rate (e.g., 100 Hz). ???
+
+    # normalize the SCG signals of each heartbeat cycle 
     # by dividing with the maximum amplitude of the cycle.
 
     # get the max len among all the heartbeat cycles
@@ -52,8 +57,7 @@ def plot_heartbeat_cycle(heartbeat_cycle, title):
     plt.show()
 
 
-def plot_heartbeat_cycle_dwt(heartbeat_cycle, heartbeat_timeline, title):
-    # x = [x[0] for x in heartbeat_timeline]
+def plot_heartbeat_cycle_dwt(heartbeat_cycle, title):
     x = [(x/len(heartbeat_cycle)) for x in range(len(heartbeat_cycle))]
     y = [x for x in heartbeat_cycle]
 
@@ -67,6 +71,29 @@ def plot_heartbeat_cycle_dwt(heartbeat_cycle, heartbeat_timeline, title):
     plt.ylabel("Acceleration (m/s^2)")
     plt.show()
 
+
+def interpolate_heartbeats(segmented_heartbeats):
+
+    for segmented_heartbeat in segmented_heartbeats:
+        # get all scg values from the heartbeat cycle
+        scgs = [x[1] for x in segmented_heartbeat]
+        # get all time values from the heartbeat cycle
+        times = [x[0] for x in segmented_heartbeat]
+
+        # linearly interpolate the scg values to 200 values
+        # f = scipy.interpolate.interp1d(times, scgs, kind='linear')
+        f = scipy.interpolate.interp1d(times, scgs, kind='cubic')
+        times_new = np.linspace(times[0], times[-1], 200)
+        scgs_new = f(times_new)
+
+        # replace the old scg values with the new interpolated scgs
+        for i in range(len(segmented_heartbeat)):
+            segmented_heartbeat[i] = (segmented_heartbeat[i][0], scgs_new[i])
+        
+        plot_heartbeat_cycle(segmented_heartbeat, "Interpolated Heartbeat Cycle")
+    
+
+interpolate_heartbeats(segmented_heartbeats)
 
 
 def dwt_decompose(segmented_heartbeats):
@@ -90,7 +117,7 @@ def dwt_decompose(segmented_heartbeats):
             cA, cD = coeffs
             print("\n\ncA: ", cA)
             print("-----\n")
-            plot_heartbeat_cycle_dwt(cA, n_heartbeat, "Level " + str(i))
+            plot_heartbeat_cycle_dwt(cA, "Level " + str(i))
             n_scgs = cA
             
 
