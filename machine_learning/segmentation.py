@@ -54,6 +54,20 @@ heartbeat_tuples = create_heartbeat_tuples(heartbeat_2secs)
 # print(heartbeat_tuples)
 
 
+# mark the highest peak and the closest peak on the plotted graph
+def plot_segmented_heartbeats(heartbeat_tuples, ao_tuple, rf_tuple):
+    x = [x[0] for x in heartbeat_tuples]
+    y = [x[1] for x in heartbeat_tuples]
+    plt.plot(x, y)
+    plt.title("Heartbeat z-values for 2 seconds -- segmented")
+    plt.xlabel("Time (seconds)")
+    plt.ylabel("Acceleration (g)")
+    plt.scatter(ao_tuple[0], ao_tuple[1], color='red')
+    plt.scatter(rf_tuple[0], rf_tuple[1], color='green')
+    plt.show()
+
+
+
 #step 2 - identify the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
 def segment_heartbeats(heartbeat_tuples):   
         # find the local maximum y values of heartbeat_tuples  ***(within a x range of 0.5 seconds ???)***
@@ -126,6 +140,7 @@ print("\n\n-----------------------------------\n\n")
 # identify the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
 def segment_heartbeats2(heartbeat_tuples):
 
+    all_heartvalues = []
     # identify the highest peak (y value) in each heartbeat_tuple_2secs
     for heartbeat_tuple_2secs in heartbeat_tuples:
         highest_peak = max(heartbeat_tuple_2secs, key=lambda x: x[1])
@@ -143,9 +158,27 @@ def segment_heartbeats2(heartbeat_tuples):
                     closest_peak = heartbeat_tuple_2secs[i]
         
         print("Closest peak: ", closest_peak)
-        print("Closest peak distance: \n\n\n", closest_peak_distance)
+        print("Closest peak distance: ", closest_peak_distance)
+        print("\n\n\n")
 
-segment_heartbeats2(heartbeat_tuples)
+        # plot_segmented_heartbeats(heartbeat_tuple_2secs, highest_peak, closest_peak)
+
+        # return array of heartbeat_tuple_2secs values in the range: 0.5*closest_peak_distance - 1.5*closest_peak_distance
+
+        heartvalues = []
+        for i in range(len(heartbeat_tuple_2secs)):
+            if (heartbeat_tuple_2secs[i][0] > 0.5*closest_peak_distance and heartbeat_tuple_2secs[i][0] < 1.5*closest_peak_distance):
+                heartvalues.append(heartbeat_tuple_2secs[i])
+
+        all_heartvalues.append(heartvalues)
+    return all_heartvalues
+
+
+segmented_heartbeats = segment_heartbeats2(heartbeat_tuples)
+
+for segmented_heartbeat in segmented_heartbeats:
+    print(segmented_heartbeat)
+    print("\n\n")
 
 
 def normalize_data(heartbeat_tuples):
