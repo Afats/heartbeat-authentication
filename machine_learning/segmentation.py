@@ -1,6 +1,6 @@
 #python program to segment accelerometer heartbeat values to obtain a full heartbeat cycle
 # step 1 - read in the data and divide into 2 second chunks
-# step 2 - identity the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
+# step 2 - identify the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
 # This performs well in trying to find the AO and RF as AO to RF intervals are larger than 200ms
 # Now that we have obtained the AO to RF distance, we multiply 0.5 to it to obtain the ATC to AO distance, from that we can obtain a full heartbeat cycle.
 
@@ -16,7 +16,7 @@ with open('../heartbeat_values/heartvals_2secs.csv', 'r') as f:
     heartbeat_2secs = list(reader)
     #print(heartbeat_2secs)
 
-#convert the all the heartbeat_2secs data in each list to floats/100.0
+#convert all the heartbeat_2secs data in each list to floats/100.0
 for i in range(len(heartbeat_2secs)):
     heartbeat_2secs[i] = [float(x)/100.0 for x in heartbeat_2secs[i]]
 
@@ -61,7 +61,7 @@ def segment_heartbeats(heartbeat_tuples):
             local_maxima = argrelextrema(np.array(heartbeat_tuple_2secs)[:,1], np.greater)
             local_maxima_values = np.array(heartbeat_tuple_2secs)[local_maxima]
             local_maxima_values = [tuple(x) for x in local_maxima_values]
-            #print(local_maxima_values)   
+            # print(local_maxima_values)
 
 
             # *** review candiate set adding process, and peak removing process ***
