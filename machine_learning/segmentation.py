@@ -9,6 +9,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import argrelextrema
+# from sklearn import preprocessing
 
 #read in the data
 with open('../heartbeat_values/heartvals_2secs.csv', 'r') as f:
@@ -75,7 +76,7 @@ def segment_heartbeats(heartbeat_tuples):
             # print(candidate_set)
 
 
-            # *** iterate thru local maxima values and remove the ones that are within 200ms of a peak in the candidate_set instead ???****
+            # *** iterate thru local maxima values and remove the ones in local_maxima that are within 200ms of a peak in the candidate_set instead ???****
 
             # if the distance is less than 200ms to the current candidate, remove the peak from candidate_set
             for i in range(len(candidate_set)):
@@ -121,6 +122,30 @@ def segment_heartbeats(heartbeat_tuples):
            
 
 segment_heartbeats(heartbeat_tuples)   
+print("\n\n-----------------------------------\n\n")
+# identify the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
+def segment_heartbeats2(heartbeat_tuples):
+
+    # identify the highest peak (y value) in each heartbeat_tuple_2secs
+    for heartbeat_tuple_2secs in heartbeat_tuples:
+        highest_peak = max(heartbeat_tuple_2secs, key=lambda x: x[1])
+
+        print("Highest peak: ", highest_peak)
+
+
+        # find closest peak to the highest peak that's greater than 200ms
+        closest_peak_distance = 0.5
+        closest_peak = 0
+        for heartbeat_tuple_2secs in heartbeat_tuples:
+            for i in range(len(heartbeat_tuple_2secs)):
+                if (heartbeat_tuple_2secs[i][0] - highest_peak[0] > 0.2 and heartbeat_tuple_2secs[i][0] - highest_peak[0] < closest_peak_distance):
+                    closest_peak_distance = heartbeat_tuple_2secs[i][0] - highest_peak[0]
+                    closest_peak = heartbeat_tuple_2secs[i]
+        
+        print("Closest peak: ", closest_peak)
+        print("Closest peak distance: \n\n\n", closest_peak_distance)
+
+segment_heartbeats2(heartbeat_tuples)
 
 
 
