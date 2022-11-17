@@ -445,12 +445,12 @@ static float
 acc_convert(int16_t raw_data)
 {
   float v = 0;
-  //printf("Accuracy range function");
+  printf("Accuracy range function");
 
   switch(acc_range) {
   case ACC_RANGE_2G:
     /* Calculate acceleration, unit G, range -2, +2 */
-    // printf("Accuracy range 2G");
+    printf("Accuracy range 2G");
     v = (raw_data * 1.0) / (32768 / 2);
     break;
   case ACC_RANGE_4G:
@@ -518,7 +518,8 @@ power_up(void)
  * \brief Returns a reading from the sensor
  * \param type MPU_9250_SENSOR_TYPE_ACC_[XYZ] or MPU_9250_SENSOR_TYPE_GYRO_[XYZ]
  * \return centi-G (ACC) or centi-Deg/Sec (Gyro)
- * adapted to return in (G/10000)
+ * adapted to return original sensor value - can be converted to G by multiplying with 
+ * (raw_data * 1.0) / (32768 / 2);
  */
 static int
 value(int type)
@@ -542,22 +543,27 @@ value(int type)
     rv = acc_read(sensor_value);
 
     if(rv == 0) {
+      //printf("Reading error!");
       return CC26XX_SENSOR_READING_ERROR;
     }
 
     PRINTF("MPU: ACC = 0x%04x 0x%04x 0x%04x = ",
            sensor_value[0], sensor_value[1], sensor_value[2]);
 
-    /* Convert */
+    // Do no conversion but return original value for maximal precision
+
+    /* Convert 
     if(type == MPU_9250_SENSOR_TYPE_ACC_X) {
       converted_val = acc_convert(sensor_value[0]);
     } else if(type == MPU_9250_SENSOR_TYPE_ACC_Y) {
       converted_val = acc_convert(sensor_value[1]);
     } else if(type == MPU_9250_SENSOR_TYPE_ACC_Z) {
       converted_val = acc_convert(sensor_value[2]);
-    }
+    }*/
     
-    rv = (int)(converted_val * 10000);
+    // rv = (int)(converted_val * 10000);
+    rv = sensor_value[2];
+
   } else if((type & MPU_9250_SENSOR_TYPE_GYRO) != 0) {
     t0 = RTIMER_NOW();
 

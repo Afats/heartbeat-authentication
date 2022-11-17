@@ -12,7 +12,7 @@ import numpy as np
 from scipy.signal import argrelextrema
 
 #read in the data
-with open('../heartbeat_values/heartvals_2secs.csv', 'r') as f:
+with open('../heartbeat_values/160hz/readings-mustafa-160hz.csv', 'r') as f:
     reader = csv.reader(f)
     heartbeat_2secs = list(reader)
     #print(heartbeat_2secs)
@@ -24,20 +24,30 @@ for i in range(len(heartbeat_2secs)):
 # print (heartbeat_2secs)
 
 #plot the heartbeat data
-def plot_heartbeats(heartbeat_2secs):
+def plot_heartbeats_all(heartbeat_2secs):
     #take each heartbeat_2secs list and plot it
     for i in range(len(heartbeat_2secs)):
         x_axis = [(x/256.0) for x in range(len(heartbeat_2secs[0]))]
         y_axis = heartbeat_2secs
         plt.title("Heartbeat z-values for 2 seconds")
         plt.xlabel("Time (seconds)")
-        plt.ylabel("Acceleration (g)")
+        plt.ylabel("Acceleration (m/s^2)")
         plt.plot(x_axis, y_axis[i])
         plt.show()
 
 
-# plot_heartbeats(heartbeat_2secs)
+# plot_heartbeats_all(heartbeat_2secs)
 
+#plot the 2-second tuple heartbeat data
+def plot_heartbeats(heartbeat_tuple_2secs):
+    x = [x[0] for x in heartbeat_tuple_2secs]
+    y = [x[1] for x in heartbeat_tuple_2secs]
+    plt.plot(x, y)
+    plt.title("Heartbeat z-values for 2 seconds")
+    plt.xlabel("Time (seconds)")
+    plt.ylabel("Acceleration (m/s^2)")
+    plt.show()
+    
 
 # create a pair of x axis and y axis for each heartbeat_2secs value
 def create_heartbeat_tuples(heartbeat_2secs):
@@ -54,22 +64,87 @@ heartbeat_tuples = create_heartbeat_tuples(heartbeat_2secs)
 # print(heartbeat_tuples)
 
 
-# mark the highest peak and the closest peak on the plotted graph
-def plot_segmented_heartbeats(heartbeat_tuples, ao_tuple, rf_tuple):
+# mark AO and RF on the plotted graph
+# mark start and end of heartbeat cycle
+def plot_segmented_heartbeats(heartbeat_tuples, ao_tuple, rf_tuple, closest_peak_distance):
     x = [x[0] for x in heartbeat_tuples]
     y = [x[1] for x in heartbeat_tuples]
     plt.plot(x, y)
     plt.title("Heartbeat z-values for 2 seconds -- segmented")
     plt.xlabel("Time (seconds)")
-    plt.ylabel("Acceleration (g)")
+    plt.ylabel("Acceleration (m/s^2)")
     plt.scatter(ao_tuple[0], ao_tuple[1], color='red')
     plt.scatter(rf_tuple[0], rf_tuple[1], color='green')
+    plt.axvline(x=ao_tuple[0] - 0.5*closest_peak_distance, color='yellow')
+    start_line = ao_tuple[0] - 0.5*closest_peak_distance
+    plt.axvline(x= start_line + 1.5*closest_peak_distance, color='yellow')
+    plt.axhline(y=np.mean(y), color='black')
     plt.show()
+           
 
+# segment_heartbeats(heartbeat_tuples)   
+print("\n\n-----------------------------------\n\n")
+# identify the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
+def segment_heartbeats(heartbeat_tuples):
+
+    all_heartvalues = []
+    # identify the highest peak (y value) in each heartbeat_tuple_2secs
+    for heartbeat_tuple_2secs in heartbeat_tuples:
+        plot_heartbeats(heartbeat_tuple_2secs)
+        ao_peak = max(heartbeat_tuple_2secs, key=lambda x: x[1])
+
+        print("AO peak: ", ao_peak)
+
+        # find the average of all values in heartbeat_tuple_2secs
+        average = np.mean([x[1] for x in heartbeat_tuple_2secs])
+
+
+        # find closest peak to the highest peak that's greater than 200ms
+        ao_rf_distance = 0.5
+        rf_peak = 0
+        for heartbeat_tuple_2secs in heartbeat_tuples:
+            for i in range(len(heartbeat_tuple_2secs)):
+                if (heartbeat_tuple_2secs[i][0] - ao_peak[0] > 0.2 and heartbeat_tuple_2secs[i][0] - ao_peak[0] < ao_rf_distance and heartbeat_tuple_2secs[i][1] > average):
+                    ao_rf_distance = heartbeat_tuple_2secs[i][0] - ao_peak[0]
+                    rf_peak = heartbeat_tuple_2secs[i]
+
+        
+        print("RF peak: ", rf_peak)
+        print("AO-RF distance: ", ao_rf_distance)
+        print("\n\n\n")
+
+        plot_segmented_heartbeats(heartbeat_tuple_2secs, ao_peak, rf_peak, ao_rf_distance)
+
+        # return array of heartbeat_tuple_2secs values in the range: 0.5*closest_peak_distance - 1.5*closest_peak_distance
+        start_of_hearbeat_cycle = ao_peak[0] - 0.5*ao_rf_distance
+        end_of_heartbeat_cycle = start_of_hearbeat_cycle + 1.5*ao_rf_distance
+        
+        heartvalues = []
+        for i in range(len(heartbeat_tuple_2secs)):
+            if (heartbeat_tuple_2secs[i][0] >= start_of_hearbeat_cycle and heartbeat_tuple_2secs[i][0] <= end_of_heartbeat_cycle):
+                heartvalues.append(heartbeat_tuple_2secs[i])
+
+        all_heartvalues.append(heartvalues)
+    return all_heartvalues
+
+
+segmented_heartbeats = segment_heartbeats(heartbeat_tuples)
+
+for segmented_heartbeat in segmented_heartbeats:
+    print(segmented_heartbeat)
+    print("\n\n")
+
+
+
+
+
+
+
+# ------ implemenetation to extract multiple heartbeats within 2 seconds ------
 
 
 #step 2 - identify the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
-def segment_heartbeats(heartbeat_tuples):   
+def segment_heartbeats2(heartbeat_tuples):   
         # find the local maximum y values of heartbeat_tuples  ***(within a x range of 0.5 seconds ???)***
         for heartbeat_tuple_2secs in heartbeat_tuples:
             # using scipy to find the local maxima
@@ -169,8 +244,8 @@ def segment_heartbeats2(heartbeat_tuples):
         for i in range(len(heartbeat_tuple_2secs)):
             if (heartbeat_tuple_2secs[i][0] > 0.5*closest_peak_distance and heartbeat_tuple_2secs[i][0] < 1.5*closest_peak_distance):
                 heartvalues.append(heartbeat_tuple_2secs[i])
+
         all_heartvalues.append(heartvalues)
-        # print(all_heartvalues)
     return all_heartvalues
 
 
@@ -181,36 +256,6 @@ for segmented_heartbeat in segmented_heartbeats:
     print("\n\n")
 
 
-print("\n\n-----------------------------------\n\n")
-# NORMALIZATION before moving on to the extraction
 
-# finding the highest peak (y val) in each cycle
-# dividing each y val by the highest peak to normalize the data
-def normalize_heartbeats(segmented_heartbeats):
-    normalized_heartbeats = []
-    cycle_highest_peak = 0
-    # for i in range(len(segmented_heartbeat)):
-    for segmented_heartbeat in segmented_heartbeats:
-        # normalized_heartbeat = preprocessing.normalize(segmented_heartbeat)
-        cycle_highest_peak = max(segmented_heartbeat, key=lambda x: x[1])
-        print("\nmax amplitude of the beat: ",cycle_highest_peak)
-        print("\n/////////--------.......-------///////\n")
-        # print(segmented_heartbeat)
 
-        normalized_heartbeat = []
-        for beat in segmented_heartbeat:
-            normalized_altitude = beat[1] / cycle_highest_peak[1]
-            temp_beat = (beat[0], normalized_altitude)
-            beat = temp_beat
-            normalized_heartbeat.append(beat)
-
-        normalized_heartbeats.append(normalized_heartbeat)
-
-    return normalized_heartbeats
-
-normalized_heartbeats = normalize_heartbeats(segmented_heartbeats)
-
-for norm_beats in normalized_heartbeats:
-    print(norm_beats)
-    print("\n\n")
-    
+            
