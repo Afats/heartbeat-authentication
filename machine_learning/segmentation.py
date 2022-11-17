@@ -7,9 +7,9 @@
 #import heartbeatvals.csv
 import csv
 import matplotlib.pyplot as plt
+from sklearn import preprocessing
 import numpy as np
 from scipy.signal import argrelextrema
-from sklearn import preprocessing
 
 #read in the data
 with open('../heartbeat_values/heartvals_2secs.csv', 'r') as f:
@@ -169,8 +169,8 @@ def segment_heartbeats2(heartbeat_tuples):
         for i in range(len(heartbeat_tuple_2secs)):
             if (heartbeat_tuple_2secs[i][0] > 0.5*closest_peak_distance and heartbeat_tuple_2secs[i][0] < 1.5*closest_peak_distance):
                 heartvalues.append(heartbeat_tuple_2secs[i])
-
         all_heartvalues.append(heartvalues)
+        # print(all_heartvalues)
     return all_heartvalues
 
 
@@ -181,6 +181,36 @@ for segmented_heartbeat in segmented_heartbeats:
     print("\n\n")
 
 
-def normalize_data(heartbeat_tuples):
-    
+print("\n\n-----------------------------------\n\n")
+# NORMALIZATION before moving on to the extraction
 
+# finding the highest peak (y val) in each cycle
+# dividing each y val by the highest peak to normalize the data
+def normalize_heartbeats(segmented_heartbeats):
+    normalized_heartbeats = []
+    cycle_highest_peak = 0
+    # for i in range(len(segmented_heartbeat)):
+    for segmented_heartbeat in segmented_heartbeats:
+        # normalized_heartbeat = preprocessing.normalize(segmented_heartbeat)
+        cycle_highest_peak = max(segmented_heartbeat, key=lambda x: x[1])
+        print("\nmax amplitude of the beat: ",cycle_highest_peak)
+        print("\n/////////--------.......-------///////\n")
+        # print(segmented_heartbeat)
+
+        normalized_heartbeat = []
+        for beat in segmented_heartbeat:
+            normalized_altitude = beat[1] / cycle_highest_peak[1]
+            temp_beat = (beat[0], normalized_altitude)
+            beat = temp_beat
+            normalized_heartbeat.append(beat)
+
+        normalized_heartbeats.append(normalized_heartbeat)
+
+    return normalized_heartbeats
+
+normalized_heartbeats = normalize_heartbeats(segmented_heartbeats)
+
+for norm_beats in normalized_heartbeats:
+    print(norm_beats)
+    print("\n\n")
+    
