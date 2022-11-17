@@ -9,7 +9,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import argrelextrema
-# from sklearn import preprocessing
+from sklearn import preprocessing
 
 #read in the data
 with open('../heartbeat_values/heartvals_2secs.csv', 'r') as f:
@@ -148,6 +148,6 @@ def segment_heartbeats2(heartbeat_tuples):
 segment_heartbeats2(heartbeat_tuples)
 
 
+def normalize_data(heartbeat_tuples):
+    
 
-
-            
