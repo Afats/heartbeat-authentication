@@ -6,6 +6,8 @@
 # To reduce noise in the SCG signal, we only use the detailed coefficients from the second level to the fourth level 
 # as the feature vector for heartbeat authentication.
 
+# use the discrete Meyer wavelet
+
 import pywt
 from segmentation import segmented_heartbeats
 import matplotlib.pyplot as plt
@@ -51,7 +53,8 @@ def plot_heartbeat_cycle(heartbeat_cycle, title):
 
 
 def plot_heartbeat_cycle_dwt(heartbeat_cycle, heartbeat_timeline, title):
-    x = [x[0] for x in heartbeat_timeline]
+    # x = [x[0] for x in heartbeat_timeline]
+    x = [(x/len(heartbeat_cycle)) for x in range(len(heartbeat_cycle))]
     y = [x for x in heartbeat_cycle]
 
     # append x with mean values for length of y-x
@@ -81,9 +84,9 @@ def dwt_decompose(segmented_heartbeats):
 
         # get all scg values from the heartbeat cycle
         n_scgs = [x[1] for x in n_heartbeat]
-
+        # wavelet = pywt.Wavelet('dmey')
         for i in range (1, 6): 
-            coeffs = pywt.dwt(n_scgs, 'db1')   
+            coeffs = pywt.dwt(n_scgs, 'dmey')   
             cA, cD = coeffs
             print("\n\ncA: ", cA)
             print("-----\n")
@@ -91,7 +94,7 @@ def dwt_decompose(segmented_heartbeats):
             n_scgs = cA
             
 
-
+dwt_decompose(segmented_heartbeats)
 
         
     
