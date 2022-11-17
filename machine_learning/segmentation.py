@@ -54,8 +54,9 @@ heartbeat_tuples = create_heartbeat_tuples(heartbeat_2secs)
 # print(heartbeat_tuples)
 
 
-# mark the highest peak and the closest peak on the plotted graph
-def plot_segmented_heartbeats(heartbeat_tuples, ao_tuple, rf_tuple):
+# mark AO and RF on the plotted graph
+# mark start and end of heartbeat cycle
+def plot_segmented_heartbeats(heartbeat_tuples, ao_tuple, rf_tuple, closest_peak_distance):
     x = [x[0] for x in heartbeat_tuples]
     y = [x[1] for x in heartbeat_tuples]
     plt.plot(x, y)
@@ -64,6 +65,8 @@ def plot_segmented_heartbeats(heartbeat_tuples, ao_tuple, rf_tuple):
     plt.ylabel("Acceleration (g)")
     plt.scatter(ao_tuple[0], ao_tuple[1], color='red')
     plt.scatter(rf_tuple[0], rf_tuple[1], color='green')
+    plt.axvline(x=0.5*closest_peak_distance, color='black')
+    plt.axvline(x=1.5*closest_peak_distance, color='black')
     plt.show()
 
 
@@ -161,7 +164,7 @@ def segment_heartbeats2(heartbeat_tuples):
         print("Closest peak distance: ", closest_peak_distance)
         print("\n\n\n")
 
-        # plot_segmented_heartbeats(heartbeat_tuple_2secs, highest_peak, closest_peak)
+        # plot_segmented_heartbeats(heartbeat_tuple_2secs, highest_peak, closest_peak, closest_peak_distance)
 
         # return array of heartbeat_tuple_2secs values in the range: 0.5*closest_peak_distance - 1.5*closest_peak_distance
 
