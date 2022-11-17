@@ -144,8 +144,19 @@ def segment_heartbeats2(heartbeat_tuples):
         
         print("Closest peak: ", closest_peak)
         print("Closest peak distance: \n\n\n", closest_peak_distance)
+        plot_segmented_heartbeats(heartbeat_tuple_2secs, highest_peak, closest_peak)
 
 segment_heartbeats2(heartbeat_tuples)
+
+# mark the highest peak and the closest peak on the plotted graph
+def plot_segmented_heartbeats(heartbeat_tuples, ao, rf):
+    x = [x[0] for x in heartbeat_tuples]
+    y = [x[1] for x in heartbeat_tuples]
+    plt.plot(x, y)
+    plt.scatter(ao[0], ao[1], color='red')
+    plt.scatter(rf[0], rf[1], color='green')
+    plt.show()
+
 
 
 
