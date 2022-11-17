@@ -8,7 +8,7 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import argrelextrema
+# from scipy.signal import argrelextrema
 # from sklearn import preprocessing
 
 frequency = 160.0
@@ -97,7 +97,7 @@ def segment_heartbeats(heartbeat_tuples):
     for heartbeat_tuple_2secs in heartbeat_tuples:
 
         
-        plot_heartbeats(heartbeat_tuple_2secs)
+        #plot_heartbeats(heartbeat_tuple_2secs)
         ao_peak = max(heartbeat_tuple_2secs, key=lambda x: x[1])
 
         print("AO peak: ", ao_peak)
@@ -121,7 +121,7 @@ def segment_heartbeats(heartbeat_tuples):
         print("AO-RF distance: ", ao_rf_distance)
         print("\n\n\n")
 
-        plot_segmented_heartbeats(heartbeat_tuple_2secs, ao_peak, rf_peak, ao_rf_distance)
+        #plot_segmented_heartbeats(heartbeat_tuple_2secs, ao_peak, rf_peak, ao_rf_distance)
 
         # return array of heartbeat_tuple_2secs values in the range: 0.5*closest_peak_distance - 1.5*closest_peak_distance
         start_of_hearbeat_cycle = ao_peak[0] - 0.5*ao_rf_distance
