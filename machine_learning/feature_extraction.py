@@ -134,10 +134,17 @@ def dwt_decompose(segmented_heartbeats):
             cA, cD = coeffs
             # plot_heartbeat_cycle_dwt(cD, "Detailed Coeffecients @ level " + str(i))
             reconstructed_scg_signal = pywt.idwt(cA, cD, 'dmey', 'smooth')
-            plot_heartbeat_cycle_dwt(reconstructed_scg_signal, "Reconstructed SCG Signal @ level " + str(i))
+            # plot_heartbeat_cycle_dwt(reconstructed_scg_signal, "Reconstructed SCG Signal @ level " + str(i))
             n_scgs = cA
             each_wave_vector.append(reconstructed_scg_signal)
         heartbeat_feature_vector.append(each_wave_vector)
+        # print("\n\n\n\n")
+        # print("this")
+
+    # print("\n\n\n\n")
+    # print("this")
+    # print("\n\n\n\n")
+    print(heartbeat_feature_vector)
             
 
 dwt_decompose(segmented_heartbeats)
