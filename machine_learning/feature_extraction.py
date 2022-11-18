@@ -126,7 +126,7 @@ def dwt_decompose(segmented_heartbeats):
 
             coeffs = pywt.dwt(n_scgs, 'dmey')   
             cA, cD = coeffs
-            plot_heartbeat_cycle_dwt(cD, "Level " + str(i))
+            plot_heartbeat_cycle_dwt(cD, "Detailed Coeffecientd @ level " + str(i))
             n_scgs = cA
             
 
