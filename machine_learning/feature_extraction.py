@@ -13,6 +13,7 @@ from segmentation import segmented_heartbeats
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate
+import pandas as pd
 
 
 # TODO: store reconstructed values in feature vectors
@@ -121,7 +122,7 @@ def dwt_decompose(segmented_heartbeats):
         n_scgs = [x[1] for x in n_heartbeat]
         # wavelet = pywt.Wavelet('dmey')
         each_wave_vector = []
-        for i in range (1, 6): 
+        for i in range (2, 5): 
             
             # coeffs = pywt.wavedec(n_scgs, 'dmey', level=i)
             # cA = coeffs[0]
@@ -138,17 +139,26 @@ def dwt_decompose(segmented_heartbeats):
             n_scgs = cA
             each_wave_vector.append(reconstructed_scg_signal)
         heartbeat_feature_vector.append(each_wave_vector)
-        # print("\n\n\n\n")
-        # print("this")
-
-    # print("\n\n\n\n")
-    # print("this")
-    # print("\n\n\n\n")
-    # print(heartbeat_feature_vector)
+        
+    print(heartbeat_feature_vector)
     return heartbeat_feature_vector
             
+extracted_feature_cycles = dwt_decompose(segmented_heartbeats)
 
-extracted_features = dwt_decompose(segmented_heartbeats)
+# creates a table of 56 columns
+def create_features_vector(extracted_feature_cycles):
 
-        
-    
+    finalDF = pd.DataFrame()
+    print("len of set: ", len(extracted_feature_cycles))
+    for elemi in extracted_feature_cycles:
+        for elem in elemi:
+            print("len of set: ", len(extracted_feature_cycles))
+            elem = elem[:56]
+            my_array = np.array(elem)
+            df = pd.DataFrame(my_array)
+            df = df.transpose()
+            finalDF = finalDF.append(df, ignore_index = True)
+    finalDF.insert(0, "Type", "1")
+    finalDF.to_csv('temp2.csv')
+
+create_features_vector(extracted_feature_cycles)
