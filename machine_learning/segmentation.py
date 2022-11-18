@@ -215,36 +215,5 @@ def segment_heartbeats2(heartbeat_tuples):
                         print("AO peak: ", ao_peak)
                         print("RF peak: ", rf_peak)
 
-            
+          
 print("\n\n-----------------------------------\n\n")
-# NORMALIZATION before moving on to the extraction
-
-# finding the highest peak (y val) in each cycle
-# dividing each y val by the highest peak to normalize the data
-def normalize_heartbeats(segmented_heartbeats):
-    normalized_heartbeats = []
-    # for i in range(len(segmented_heartbeat)):
-    for segmented_heartbeat in segmented_heartbeats:
-        # normalized_heartbeat = preprocessing.normalize(segmented_heartbeat)
-        cycle_highest_peak = max(segmented_heartbeat, key=lambda x: x[1])
-        print("\nmax amplitude of the beat: ",cycle_highest_peak)
-        print("\n/////////--------.......-------///////\n")
-        # print(segmented_heartbeat )
-
-        normalized_heartbeat = []
-        for beat in segmented_heartbeat:
-            normalized_altitude = beat[1] / cycle_highest_peak[1]
-            temp_beat = (beat[0], normalized_altitude)
-            beat = temp_beat
-            normalized_heartbeat.append(beat)
-            # print("normalized altitude is ",normalized_altitude)
-
-        normalized_heartbeats.append(normalized_heartbeat)
-
-    return normalized_heartbeats
-
-normalized_heartbeats = normalize_heartbeats(segmented_heartbeats)
-
-# for norm_beats in normalized_heartbeats:
-#     print(norm_beats)
-#     print("\n\n")

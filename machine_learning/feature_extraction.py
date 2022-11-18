@@ -14,38 +14,44 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate
 
+# NORMALIZATION before moving on to the extraction
+
 def normalize_heartbeats(segmented_heartbeats):
+    normalized_heartbeats = []
 
-    # step 0: linear interpolation algorithm 
-    # to normalize the accelerometer readings to a standard sampling rate (e.g., 100 Hz). ???
-
-    # normalize the SCG signals of each heartbeat cycle 
-    # by dividing with the maximum amplitude of the cycle.
-
-    # get the max len among all the heartbeat cycles
     max_len = 0
-    for heartbeat_cycle in segmented_heartbeats:
-        if (len(heartbeat_cycle) > max_len):
-            max_len = len(heartbeat_cycle)
-
+    for beat_cycle in normalized_heartbeats:
+        if (len(beat_cycle) > max_len):
+            max_len = len(beat_cycle)
     
+    for segmented_heartbeat in segmented_heartbeats:
 
-    for heartbeat_cycle in segmented_heartbeats:
+        # finding the highest peak (y val) in each cycle
+        # dividing each y val by the highest peak to normalize the data
+        cycle_highest_peak = max(segmented_heartbeat, key=lambda x: x[1])
+        print("\nmax amplitude of the beat: ",cycle_highest_peak)
+        print("\n/////////--------.......-------///////\n")
 
-        # get max amplitude
-        max_amplitude = max([x[1] for x in heartbeat_cycle])
+        normalized_heartbeat = []
+        for beat in segmented_heartbeat:
+            normalized_altitude = beat[1] / cycle_highest_peak[1]
 
-        # normalize the heartbeat cycle
-        for i in range(len(heartbeat_cycle)):
-            heartbeat_cycle[i] = (heartbeat_cycle[i][0], heartbeat_cycle[i][1]/max_amplitude)
-        
-        # append zeros at the end of each heartbeat cycle to guarantee the same duration
-        if (len(heartbeat_cycle) < max_len):
-            heartbeat_cycle = heartbeat_cycle + [(heartbeat_cycle[-1][0] + 0.001, 0) for i in range(max_len - len(heartbeat_cycle))]
+            beat = (beat[0], normalized_altitude)
 
+            # appending zeros to the end of each heartbeat cycle to guarantee consistent durations
+            if (len(beat) < max_len):
+                beat = beat + [(beat[-1][0] + 0.001, 0) for i in range(max_len - len(beat))]
 
-    return segmented_heartbeats
+            normalized_heartbeat.append(beat)
+        normalized_heartbeats.append(normalized_heartbeat)
+    return normalized_heartbeats
 
+normalized_heartbeats = normalize_heartbeats(segmented_heartbeats)
+
+for norm_beats in normalized_heartbeats:
+    print("normalized heartbeats by pankrit ")
+    print(norm_beats)
+    print("\n\n")
 
 def plot_heartbeat_cycle(heartbeat_cycle, title):
     x = [x[0] for x in heartbeat_cycle]
