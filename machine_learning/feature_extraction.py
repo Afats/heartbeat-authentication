@@ -17,12 +17,13 @@ import scipy.interpolate
 def normalize_heartbeats(segmented_heartbeats):
 
     # step 0: linear interpolation algorithm 
-    # to normalize the accelerometer readings to a standard sampling rate (e.g., 100 Hz). ???
+    # to normalize the accelerometer readings to a standard sampling rate (e.g., 100 Hz). probs not needed???
 
     # normalize the SCG signals of each heartbeat cycle 
     # by dividing with the maximum amplitude of the cycle.
 
     # get the max len among all the heartbeat cycles
+    normalized_heartbeats = []
     max_len = 0
     for heartbeat_cycle in segmented_heartbeats:
         if (len(heartbeat_cycle) > max_len):
@@ -43,10 +44,9 @@ def normalize_heartbeats(segmented_heartbeats):
             for i in range(max_len - len(heartbeat_cycle)):
                 heartbeat_cycle.append((heartbeat_cycle[-1][0] + 0.1, mean)))
 
-
-
-
-    return segmented_heartbeats
+        normalized_heartbeats.append(heartbeat_cycle)
+        
+    return normalized_heartbeats
 
 
 def plot_heartbeat_cycle(heartbeat_cycle, title):
