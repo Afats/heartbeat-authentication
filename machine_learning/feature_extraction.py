@@ -15,8 +15,8 @@ import numpy as np
 import scipy.interpolate
 
 
-# store reconstrcuted values in feature vectors
-# store all feature vectors in a feature matrix ???
+# TODO: store reconstructed values in feature vectors
+# TODO: store all feature vectors in a feature matrix ???
 
 def normalize_heartbeats(segmented_heartbeats):
 
