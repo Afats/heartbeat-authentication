@@ -117,8 +117,13 @@ def dwt_decompose(segmented_heartbeats):
         n_scgs = [x[1] for x in n_heartbeat]
         # wavelet = pywt.Wavelet('dmey')
         for i in range (1, 6): 
+            
             # coeffs = pywt.wavedec(n_scgs, 'dmey', level=i)
             # cA = coeffs[0]
+
+            # coeffs = pywt.downcoef('a', n_scgs, 'dmey', mode='sym', level=i)
+            # cA = coeffs
+
             coeffs = pywt.dwt(n_scgs, 'dmey')   
             cA, cD = coeffs
             print("\n\ncA: ", cA)
