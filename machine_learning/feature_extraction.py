@@ -144,10 +144,11 @@ def dwt_decompose(segmented_heartbeats):
     # print("\n\n\n\n")
     # print("this")
     # print("\n\n\n\n")
-    print(heartbeat_feature_vector)
+    # print(heartbeat_feature_vector)
+    return heartbeat_feature_vector
             
 
-dwt_decompose(segmented_heartbeats)
+extracted_features = dwt_decompose(segmented_heartbeats)
 
         
     
