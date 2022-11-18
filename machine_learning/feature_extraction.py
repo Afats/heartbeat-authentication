@@ -14,21 +14,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate
 
+
+# TODO: store reconstructed values in feature vectors
+# TODO: store all feature vectors in a feature matrix ???
+
 def normalize_heartbeats(segmented_heartbeats):
 
     # step 0: linear interpolation algorithm 
-    # to normalize the accelerometer readings to a standard sampling rate (e.g., 100 Hz). ???
+    # to normalize the accelerometer readings to a standard sampling rate (e.g., 100 Hz). probs not needed???
 
     # normalize the SCG signals of each heartbeat cycle 
     # by dividing with the maximum amplitude of the cycle.
 
     # get the max len among all the heartbeat cycles
+    normalized_heartbeats = []
     max_len = 0
     for heartbeat_cycle in segmented_heartbeats:
         if (len(heartbeat_cycle) > max_len):
             max_len = len(heartbeat_cycle)
 
-    
+    print("max_len: ", max_len)
 
     for heartbeat_cycle in segmented_heartbeats:
 
@@ -39,12 +44,15 @@ def normalize_heartbeats(segmented_heartbeats):
         for i in range(len(heartbeat_cycle)):
             heartbeat_cycle[i] = (heartbeat_cycle[i][0], heartbeat_cycle[i][1]/max_amplitude)
         
-        # append zeros at the end of each heartbeat cycle to guarantee the same duration
+        # append mean of cycle at the end of each heartbeat cycle to guarantee the same duration
         if (len(heartbeat_cycle) < max_len):
-            heartbeat_cycle = heartbeat_cycle + [(heartbeat_cycle[-1][0] + 0.001, 0) for i in range(max_len - len(heartbeat_cycle))]
+            mean = np.mean([x[1] for x in heartbeat_cycle])
+            for i in range(max_len - len(heartbeat_cycle)):
+                heartbeat_cycle.append((heartbeat_cycle[-1][0] + 0.1, mean))
 
-
-    return segmented_heartbeats
+        normalized_heartbeats.append(heartbeat_cycle)
+        
+    return normalized_heartbeats
 
 
 def plot_heartbeat_cycle(heartbeat_cycle, title):
@@ -99,9 +107,9 @@ def interpolate_heartbeats(segmented_heartbeats):
 def dwt_decompose(segmented_heartbeats):
 
     normalized_heartbeats = normalize_heartbeats(segmented_heartbeats)
-
+    # heartbeat_feature_vector
     for n_heartbeat in normalized_heartbeats:
-
+        # heartbeat_feature_vector = []
         print("Normalized heartbeat: ", n_heartbeat)
         plot_heartbeat_cycle(n_heartbeat, "Raw Normalized Heartbeat Cycle")
         
@@ -113,11 +121,19 @@ def dwt_decompose(segmented_heartbeats):
         n_scgs = [x[1] for x in n_heartbeat]
         # wavelet = pywt.Wavelet('dmey')
         for i in range (1, 6): 
+            
+            # coeffs = pywt.wavedec(n_scgs, 'dmey', level=i)
+            # cA = coeffs[0]
+
+            # coeffs = pywt.downcoef('a', n_scgs, 'dmey', mode='sym', level=i)
+            # cA = coeffs
+
+            # discrete Meyer wavelet used to decompose raw SCG/approx. coefficients
             coeffs = pywt.dwt(n_scgs, 'dmey')   
             cA, cD = coeffs
-            print("\n\ncA: ", cA)
-            print("-----\n")
-            plot_heartbeat_cycle_dwt(cA, "Level " + str(i))
+            # plot_heartbeat_cycle_dwt(cD, "Detailed Coeffecients @ level " + str(i))
+            reconstructed_scg_signal = pywt.idwt(cA, cD, 'dmey', 'smooth')
+            plot_heartbeat_cycle_dwt(reconstructed_scg_signal, "Reconstructed SCG Signal @ level " + str(i))
             n_scgs = cA
             
 
@@ -125,4 +141,3 @@ dwt_decompose(segmented_heartbeats)
 
         
     
-
