@@ -17,4 +17,3 @@ x = np.array(x[1:57])
 clf.fit(x, y)
 
 print(x.shape)
-
