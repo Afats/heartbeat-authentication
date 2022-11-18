@@ -552,17 +552,16 @@ value(int type)
 
     // Do no conversion but return original value for maximal precision
 
-    /* Convert 
+    // Get data
     if(type == MPU_9250_SENSOR_TYPE_ACC_X) {
-      converted_val = acc_convert(sensor_value[0]);
+      rv = sensor_value[0];
     } else if(type == MPU_9250_SENSOR_TYPE_ACC_Y) {
-      converted_val = acc_convert(sensor_value[1]);
+      rv = sensor_value[1];
     } else if(type == MPU_9250_SENSOR_TYPE_ACC_Z) {
-      converted_val = acc_convert(sensor_value[2]);
-    }*/
+      rv = sensor_value[2];
+    }
     
     // rv = (int)(converted_val * 10000);
-    rv = sensor_value[2];
 
   } else if((type & MPU_9250_SENSOR_TYPE_GYRO) != 0) {
     t0 = RTIMER_NOW();
