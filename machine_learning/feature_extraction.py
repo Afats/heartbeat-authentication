@@ -93,7 +93,7 @@ def interpolate_heartbeats(segmented_heartbeats):
         plot_heartbeat_cycle(segmented_heartbeat, "Interpolated Heartbeat Cycle")
     
 
-interpolate_heartbeats(segmented_heartbeats)
+# interpolate_heartbeats(segmented_heartbeats)
 
 
 def dwt_decompose(segmented_heartbeats):
