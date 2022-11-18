@@ -58,59 +58,88 @@
 #include "contiki-net.h"
 #include "net/ip/uip-debug.h"
 #include <string.h>
+#include "contiki-conf.h"
+#include "lib/sensors.h"
+#include "mpu-9250-sensor.h"
+#include "sys/rtimer.h"
+#include "sensor-common.h"
+#include "board-i2c.h"
+
+#include "ti-lib.h"
+
+#include <stdint.h>
+#include <string.h>
+#include <stdio.h>
+#include <math.h>
 
 //#define DEBUG DEBUG_PRINT
 
 
 #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 #define MAX_PAYLOAD_LEN 120
-#define FREQUENCY 256 // in Hz
+#define FREQUENCY 160 // in Hz
 #define READING_TIME 2 // in seconds
 #define BYTES_PER_PACKET 64 // make sure READING_TIME*FREQUENCY is dividable by BYTES_PER_PACKET
 #define TIME_BETWEEN_PACKETS 1000 // in milliseconds
 static struct uip_udp_conn *server_conn;
 
 
-int readings[FREQUENCY*READING_TIME];
+int16_t send_buffer[BYTES_PER_PACKET+2]; // additional space for sequence number
+int16_t readings[FREQUENCY*READING_TIME];
 int num_readings;
-int packets_send;
+int16_t packets_send;
 
 static struct rtimer timer_rtimer;
 static rtimer_clock_t timeout_rtimer = RTIMER_SECOND / FREQUENCY;
 static struct ctimer timer_ctimer;
+int16_t num_packets_to_send = (FREQUENCY*READING_TIME)/(BYTES_PER_PACKET/2);
+
+int inc = 0;
+void send_callback(){
+        uip_ipaddr_t target_addr;
+        uip_ip6addr(&target_addr, 0xaaaa, 0, 0, 0, 0, 0, 0, 1);
+	if (packets_send < num_packets_to_send) {
+		// copy data to send buffer
+		send_buffer[0] = packets_send;
+		for(int i=1; i < BYTES_PER_PACKET/2+1;i++ ){
+			int16_t offset = (BYTES_PER_PACKET/2)*packets_send;
+			send_buffer[i] = readings[offset+i];
+		}
+		// should be 66
+		uip_udp_packet_sendto(server_conn, send_buffer, 66, &target_addr, UIP_HTONS(47371));
+		printf("Send finished for the packet[%d] \n\r", packets_send);
+	}
+
+	packets_send++;
+
+	if(packets_send < num_packets_to_send){
+		// reset timer if needed
+		ctimer_set(&timer_ctimer, 0.25 * CLOCK_SECOND, send_callback, NULL);
+	}
+
+
+	if(packets_send == num_packets_to_send) {
+		printf("Final Send finished \n\r");
+		leds_off(LEDS_GREEN);
+	}
+
+	
+}
 
 void measurement_callback(struct rtimer *timer, void *ptr) {
-  	readings[num_readings] = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_ACC_Z);
-	if(num_readings % 20 == 0){
-		printf("reading %d value %d \n\r", num_readings, readings[num_readings]);
-	}
+  	// readings[num_readings] = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_ACC_Z);
+	readings[num_readings] = (int) mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_ACC_Z);
+	printf("%d, ", readings[num_readings]);
 	num_readings++;
 
 	/* Re-arm rtimer */
 	if(num_readings < FREQUENCY*READING_TIME){
 		rtimer_set(&timer_rtimer, RTIMER_NOW() + timeout_rtimer, 0, measurement_callback, NULL);
 	}
-}
 
-int inc = 0;
-void send_callback(){
-        uip_ipaddr_t target_addr;
-        uip_ip6addr(&target_addr, 0xaaaa, 0, 0, 0, 0, 0, 0, 1);
-	int final_val = 1;
-	int num_packets_to_send = (FREQUENCY*READING_TIME)/(BYTES_PER_PACKET/4);
-	if (packets_send < num_packets_to_send) {
-		uip_udp_packet_sendto(server_conn, readings+(16*packets_send), 64, &target_addr, UIP_HTONS(47371));
-		printf("Send finished for the packet[%d] \n\r", packets_send);
-		ctimer_set(&timer_ctimer, 1 * CLOCK_SECOND, send_callback, NULL);
+	if(num_readings == FREQUENCY*READING_TIME){
+		ctimer_set(&timer_ctimer, 0.5 * CLOCK_SECOND, send_callback, NULL);
 	}
-
-	if (packets_send == num_packets_to_send) {
-		uip_udp_packet_sendto(server_conn, &final_val, 4, &target_addr, UIP_HTONS(47371));
-		printf("Final Send finished \n\r");
-		leds_off(LEDS_GREEN);
-	}
-
-	packets_send++;
 }
 
 
@@ -181,7 +210,7 @@ PROCESS_THREAD(udp_server_process, ev, data)
 			num_readings = 0;
 			packets_send = 0;
 			rtimer_set(&timer_rtimer, RTIMER_NOW() + timeout_rtimer, 0, measurement_callback, NULL);	
-			ctimer_set(&timer_ctimer, (READING_TIME+0.5) * CLOCK_SECOND, send_callback, NULL);
+			//ctimer_set(&timer_ctimer, (READING_TIME+0.5) * CLOCK_SECOND, send_callback, NULL);
 
 		}
 	}

@@ -32,25 +32,31 @@ def udpListenThread():
  # listen on UDP socket port UDP_REPLY_PORT
   recvSocket = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
   recvSocket.bind(("aaaa::1", UDP_REPLY_PORT))
-  recvSocket.settimeout(2)
+  recvSocket.settimeout(0.5)
 
   counter = 0
-  readings = []
+  readings = [0]*320
+  seen = set()
   while isRunning: 
     try:
-      data, addr = recvSocket.recvfrom( 8000 )
-      print data
-      print len(data)
-      print type(data)
-      if(len(data) < 64):
+      data, addr = recvSocket.recvfrom( 4000 )
+
+      seq_num = struct.unpack("h", data[0:2])[0]
+      seen.add(seq_num)
+	
+      print "Sequence Number"
+      print seq_num
+      for i in range(32):
+          print struct.unpack("h", data[(i+1)*2:(i+2)*2])[0]
+          readings[seq_num*32+i] = struct.unpack("h", data[(i+1)*2:(i+2)*2])[0]
+
+      if len(seen) == 10:
           print "plotting "
           yAxis = readings
           plot_measurements(readings)
-	  readings = []
-      else:
-          for i in range(16):
-	       print struct.unpack("I", data[i*4:(i+1)*4])[0]
-	       readings.append(struct.unpack("I", data[i*4:(i+1)*4])[0])
+          readings = [0]*320
+          seen = set()
+
       counter += 1
       print counter
 
@@ -66,6 +72,7 @@ print "Listening for incoming packets on UDP port", UDP_REPLY_PORT
 time.sleep(1)
 
 print "Exit application by pressing (CTRL-C)"
+
 
 try:
   while True:
