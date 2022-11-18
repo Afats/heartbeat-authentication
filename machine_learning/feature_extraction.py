@@ -108,8 +108,8 @@ def dwt_decompose(segmented_heartbeats):
 
     normalized_heartbeats = normalize_heartbeats(segmented_heartbeats)
     # heartbeat_feature_vector
-    heartbeat_feature_vector = []
     for n_heartbeat in normalized_heartbeats:
+        # heartbeat_feature_vector = []
         print("Normalized heartbeat: ", n_heartbeat)
         plot_heartbeat_cycle(n_heartbeat, "Raw Normalized Heartbeat Cycle")
         
@@ -120,7 +120,6 @@ def dwt_decompose(segmented_heartbeats):
         # get all scg values from the heartbeat cycle
         n_scgs = [x[1] for x in n_heartbeat]
         # wavelet = pywt.Wavelet('dmey')
-        each_wave_vector = []
         for i in range (1, 6): 
             
             # coeffs = pywt.wavedec(n_scgs, 'dmey', level=i)
