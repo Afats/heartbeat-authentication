@@ -28,8 +28,6 @@ def normalize_heartbeats(segmented_heartbeats):
         if (len(heartbeat_cycle) > max_len):
             max_len = len(heartbeat_cycle)
 
-    
-
     for heartbeat_cycle in segmented_heartbeats:
 
         # get max amplitude
@@ -39,9 +37,13 @@ def normalize_heartbeats(segmented_heartbeats):
         for i in range(len(heartbeat_cycle)):
             heartbeat_cycle[i] = (heartbeat_cycle[i][0], heartbeat_cycle[i][1]/max_amplitude)
         
-        # append zeros at the end of each heartbeat cycle to guarantee the same duration
+        # append mean of cycle at the end of each heartbeat cycle to guarantee the same duration
         if (len(heartbeat_cycle) < max_len):
-            heartbeat_cycle = heartbeat_cycle + [(heartbeat_cycle[-1][0] + 0.001, 0) for i in range(max_len - len(heartbeat_cycle))]
+            mean = np.mean([x[1] for x in heartbeat_cycle]
+            for i in range(max_len - len(heartbeat_cycle)):
+                heartbeat_cycle.append((heartbeat_cycle[-1][0] + 0.1, mean)))
+
+
 
 
     return segmented_heartbeats
