@@ -14,7 +14,7 @@ import numpy as np
 frequency = 160.0
 
 #read in the data
-with open('../heartbeat_values/160hz/readings-pankrit-160hz.csv', 'r') as f:
+with open('../heartbeat_values/pankrit_testing.csv', 'r') as f:
     reader = csv.reader(f)
     heartbeat_secs = list(reader)
     # remove incorrect data (from pressing the left button)
