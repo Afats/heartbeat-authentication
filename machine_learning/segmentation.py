@@ -8,26 +8,29 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import argrelextrema
+# from scipy.signal import argrelextrema
 # from sklearn import preprocessing
+
+frequency = 160.0
 
 #read in the data
 with open('../heartbeat_values/160hz/readings-mustafa-160hz.csv', 'r') as f:
     reader = csv.reader(f)
-    heartbeat_2secs = list(reader)
-    #print(heartbeat_2secs)
+    heartbeat_secs = list(reader)
+    # remove incorrect data (from pressing the left button)
+    heartbeat_2secs = [x[10:] for x in heartbeat_secs]
 
 #convert the all the heartbeat_2secs data in each list to floats/100.0
 for i in range(len(heartbeat_2secs)):
     heartbeat_2secs[i] = [float(x)/100.0 for x in heartbeat_2secs[i]]
-
-# print (heartbeat_2secs)
+    #print(heartbeat_2secs[i])
+    #print("----------------\n\n")
 
 #plot the heartbeat data
 def plot_heartbeats_all(heartbeat_2secs):
     #take each heartbeat_2secs list and plot it
     for i in range(len(heartbeat_2secs)):
-        x_axis = [(x/256.0) for x in range(len(heartbeat_2secs[0]))]
+        x_axis = [(x/len(heartbeat_2secs[0])) for x in range(len(heartbeat_2secs[0]))]
         y_axis = heartbeat_2secs
         plt.title("Heartbeat z-values for 2 seconds")
         plt.xlabel("Time (seconds)")
@@ -53,15 +56,17 @@ def plot_heartbeats(heartbeat_tuple_2secs):
 def create_heartbeat_tuples(heartbeat_2secs):
     heartbeat_tuples = []
     for i in range(len(heartbeat_2secs)):
-        x_vals = [(x/256.0) for x in range(len(heartbeat_2secs[i]))]
+        x_vals = [(x/frequency) for x in range(len(heartbeat_2secs[i]))]
         y_vals = heartbeat_2secs[i]
         heartbeat_tuples.append(list(zip(x_vals, y_vals)))
-        # print(heartbeat_tuples)
 
     return heartbeat_tuples
 
 heartbeat_tuples = create_heartbeat_tuples(heartbeat_2secs)
-# print(heartbeat_tuples)
+
+# for i in range(len(heartbeat_tuples)):
+#     print(heartbeat_tuples[i])
+#     print("----------------\n\n")
 
 
 # mark AO and RF on the plotted graph
@@ -90,7 +95,9 @@ def segment_heartbeats(heartbeat_tuples):
     all_heartvalues = []
     # identify the highest peak (y value) in each heartbeat_tuple_2secs
     for heartbeat_tuple_2secs in heartbeat_tuples:
-        # plot_heartbeats(heartbeat_tuple_2secs)
+
+        
+        #plot_heartbeats(heartbeat_tuple_2secs)
         ao_peak = max(heartbeat_tuple_2secs, key=lambda x: x[1])
 
         print("AO peak: ", ao_peak)
@@ -99,21 +106,22 @@ def segment_heartbeats(heartbeat_tuples):
         average = np.mean([x[1] for x in heartbeat_tuple_2secs])
 
 
-        # find closest peak to the highest peak that's greater than 200ms
+
+
+        # find closest peak to the AO peak that's greater than 200ms
         ao_rf_distance = 0.5
         rf_peak = 0
-        for heartbeat_tuple_2secs in heartbeat_tuples:
-            for i in range(len(heartbeat_tuple_2secs)):
-                if (heartbeat_tuple_2secs[i][0] - ao_peak[0] > 0.2 and heartbeat_tuple_2secs[i][0] - ao_peak[0] < ao_rf_distance and heartbeat_tuple_2secs[i][1] > average):
-                    ao_rf_distance = heartbeat_tuple_2secs[i][0] - ao_peak[0]
-                    rf_peak = heartbeat_tuple_2secs[i]
+        for i in range(len(heartbeat_tuple_2secs)):
+            if (heartbeat_tuple_2secs[i][0] - ao_peak[0] > 0.2 and heartbeat_tuple_2secs[i][0] - ao_peak[0] < ao_rf_distance and heartbeat_tuple_2secs[i][1] > average):
+                ao_rf_distance = heartbeat_tuple_2secs[i][0] - ao_peak[0]
+                rf_peak = heartbeat_tuple_2secs[i]
 
         
         print("RF peak: ", rf_peak)
         print("AO-RF distance: ", ao_rf_distance)
         print("\n\n\n")
 
-        # plot_segmented_heartbeats(heartbeat_tuple_2secs, ao_peak, rf_peak, ao_rf_distance)
+        #plot_segmented_heartbeats(heartbeat_tuple_2secs, ao_peak, rf_peak, ao_rf_distance)
 
         # return array of heartbeat_tuple_2secs values in the range: 0.5*closest_peak_distance - 1.5*closest_peak_distance
         start_of_hearbeat_cycle = ao_peak[0] - 0.5*ao_rf_distance
