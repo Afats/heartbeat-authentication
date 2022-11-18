@@ -40,9 +40,9 @@ def normalize_heartbeats(segmented_heartbeats):
         
         # append mean of cycle at the end of each heartbeat cycle to guarantee the same duration
         if (len(heartbeat_cycle) < max_len):
-            mean = np.mean([x[1] for x in heartbeat_cycle]
+            mean = np.mean([x[1] for x in heartbeat_cycle])
             for i in range(max_len - len(heartbeat_cycle)):
-                heartbeat_cycle.append((heartbeat_cycle[-1][0] + 0.1, mean)))
+                heartbeat_cycle.append((heartbeat_cycle[-1][0] + 0.1, mean))
 
         normalized_heartbeats.append(heartbeat_cycle)
         
