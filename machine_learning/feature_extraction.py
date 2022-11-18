@@ -136,7 +136,7 @@ def dwt_decompose(segmented_heartbeats):
             reconstructed_scg_signal = pywt.idwt(cA, cD, 'dmey', 'smooth')
             plot_heartbeat_cycle_dwt(reconstructed_scg_signal, "Reconstructed SCG Signal @ level " + str(i))
             n_scgs = cA
-            each_wave_vector.append(cA)
+            each_wave_vector.append(reconstructed_scg_signal)
         heartbeat_feature_vector.append(each_wave_vector)
             
 
