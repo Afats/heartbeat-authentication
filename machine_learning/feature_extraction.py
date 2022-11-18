@@ -138,8 +138,6 @@ def dwt_decompose(segmented_heartbeats):
             n_scgs = cA
             each_wave_vector.append(cA)
         heartbeat_feature_vector.append(each_wave_vector)
-            
-
 dwt_decompose(segmented_heartbeats)
 
         
