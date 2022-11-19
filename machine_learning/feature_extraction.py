@@ -9,7 +9,7 @@
 # use the discrete Meyer wavelet
 
 import pywt
-from segmentation import segmented_heartbeats
+# from segmentation import segmented_heartbeats
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate
@@ -143,7 +143,7 @@ def dwt_decompose(segmented_heartbeats):
     print(heartbeat_feature_vector)
     return heartbeat_feature_vector
             
-extracted_feature_cycles = dwt_decompose(segmented_heartbeats)
+# extracted_feature_cycles = dwt_decompose(segmented_heartbeats)
 
 # creates a table of 56 columns
 def create_features_vector(extracted_feature_cycles):
@@ -163,4 +163,4 @@ def create_features_vector(extracted_feature_cycles):
     finalDF.to_csv('temp.csv')
     return finalDF
 
-features_vector = create_features_vector(extracted_feature_cycles)
+# features_vector = create_features_vector(extracted_feature_cycles)

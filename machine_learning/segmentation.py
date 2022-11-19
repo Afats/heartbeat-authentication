@@ -13,12 +13,18 @@ import numpy as np
 
 frequency = 160.0
 
-# #read in the data
-# with open('../heartbeat_values/160hz/readings-mustafa-160hz.csv', 'r') as f:
-#     reader = csv.reader(f)
-#     heartbeat_secs = list(reader)
-#     # remove incorrect data (from pressing the left button)
-#     heartbeat_2secs = [x[10:] for x in heartbeat_secs]
+#read in the data
+def open_file(filename):
+    print(filename)
+    heartbeat_2secs = []
+    with open(filename, 'r') as f:
+        reader = csv.reader(f)
+        heartbeat_secs = list(reader)
+        # remove incorrect data (from pressing the left button)
+        heartbeat_2secs = [x[10:] for x in heartbeat_secs]
+    return heartbeat_2secs
+
+# heartbeat_2secs = open_file('../heartbeat_values/160hz/readings-mustafa-160hz.csv')
 
 def convert_to_floats(heartbeat_2secs):
     #convert the all the heartbeat_2secs data in each list to floats/100.0
@@ -27,6 +33,8 @@ def convert_to_floats(heartbeat_2secs):
         #print(heartbeat_2secs[i])
         #print("----------------\n\n")
     return heartbeat_2secs
+
+# convert_to_floats(heartbeat_2secs)
 
 #plot the heartbeat data
 def plot_heartbeats_all(heartbeat_2secs):
@@ -85,7 +93,7 @@ def plot_segmented_heartbeats(heartbeat_tuples, ao_tuple, rf_tuple, closest_peak
            
 
 # segment_heartbeats(heartbeat_tuples)   
-print("\n\n-----------------------------------\n\n")
+# print("\n\n-----------------------------------\n\n")
 # identify the AO and RF peaks using the shortest distance between 2 peaks that's greater than 200ms, starting from the highest peak.
 def segment_heartbeats(heartbeat_tuples):
 
@@ -133,9 +141,9 @@ def segment_heartbeats(heartbeat_tuples):
     return all_heartvalues
 
 
-segmented_heartbeats = segment_heartbeats(heartbeat_tuples)
+# segmented_heartbeats = segment_heartbeats(heartbeat_tuples)
 
-for segmented_heartbeat in segmented_heartbeats:
-    print(segmented_heartbeat)
-    print("\n\n")
+# for segmented_heartbeat in segmented_heartbeats:
+#     print(segmented_heartbeat)
+#     print("\n\n")
 

@@ -6,26 +6,26 @@ import numpy as np
 import scipy.interpolate
 import pandas as pd
 from sklearn.svm import SVC
-from feature_extraction import create_features_vector
 
-# features vector
-# create_features_vector(extracted_feature_cycles)
+# clf = SVC(kernel='linear')
 
+def train(clf, train_with):
+    x = pd.read_csv(train_with)
+    a = np.array(x)
+    y  = np.array(x["Type"])
+    x = np.array(x.loc[:, x.columns != 'Type'])
 
-clf = SVC(kernel='linear')
-
-x = pd.read_csv("temp2.csv")
-a = np.array(x)
-y  = np.array(x["Type"])
-x = np.array(x.loc[:, x.columns != 'Type'])
-
-clf.fit(x, y)
+    clf.fit(x, y)
+    return clf
 
 # print(x.shape)
 # print(y.shape)
+def authenticate_user(clf, other_file):
+    # x1 = pd.read_csv("temp_testing.csv")
+    x1 = pd.read_csv(other_file)
+    a1 = np.array(x1.loc[:, x1.columns != 'Type'])
 
-x1 = pd.read_csv("temp_testing.csv")
-a1 = np.array(x1.loc[:, x1.columns != 'Type'])
-
-# print(a1)
-print(clf.predict(a1))
+    # print(a1)
+    print(clf.predict(a1))
+    print(type(clf.predict(a1)))
+    return clf.predict(a1)
