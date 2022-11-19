@@ -1,7 +1,7 @@
 # Connect to Border Router
 1) Create modern Ubuntu VM 
-2) git clone https://github.com/contiki-os/contiki.git
-3) run make tunslip6 (in contiki/tools)
+2) `git clone https://github.com/contiki-os/contiki.git`
+3) run `make tunslip6` (in contiki/tools)
 4) install net-tools with `sudo apt-get update -y` and `sudo apt-get install -y net-tools`
 5) Install required python dependenices
 6) Connect sensortag with USB cable
