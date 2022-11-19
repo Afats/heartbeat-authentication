@@ -26,6 +26,7 @@ def convert_to_floats(heartbeat_2secs):
         heartbeat_2secs[i] = [float(x)/100.0 for x in heartbeat_2secs[i]]
         #print(heartbeat_2secs[i])
         #print("----------------\n\n")
+    return heartbeat_2secs
 
 #plot the heartbeat data
 def plot_heartbeats_all(heartbeat_2secs):
@@ -64,11 +65,6 @@ def create_heartbeat_tuples(heartbeat_2secs):
     return heartbeat_tuples
 
 heartbeat_tuples = create_heartbeat_tuples(heartbeat_2secs)
-
-# for i in range(len(heartbeat_tuples)):
-#     print(heartbeat_tuples[i])
-#     print("----------------\n\n")
-
 
 # mark AO and RF on the plotted graph
 # mark start and end of heartbeat cycle
