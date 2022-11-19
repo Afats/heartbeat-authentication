@@ -17,13 +17,14 @@ UDP_REPLY_PORT = 47371 # node listens for reply packets (UTC time) on this port
 isRunning = True
 
 xAxis = [(i/160.0) for i in range(320)]
+last_packet_arrival_time = 0
 
 def plot_measurements(values):
   print len(values)
   plt.plot(xAxis,values)
   plt.title('Hearbeat - Acceleration in z-Direction')
   plt.xlabel('Measurement time (s)')
-  plt.ylabel('Acceleration (G)')
+  plt.ylabel('Acceleration (2G/2^15)')
   plt.show()
   
 
@@ -41,11 +42,17 @@ def udpListenThread():
     try:
       data, addr = recvSocket.recvfrom( 4000 )
 
+      if(last_packet_arrival_time + 2 < time.time())
+          # reset all buffers
+	  readings = [0]*320
+          seen = set()
+
+      last_packet_arrival_time = time.time()
+
       seq_num = struct.unpack("h", data[0:2])[0]
       seen.add(seq_num)
 	
-      print "Sequence Number"
-      print seq_num
+      print "Sequence Number: ", seq_num
       for i in range(32):
           print struct.unpack("h", data[(i+1)*2:(i+2)*2])[0]
           readings[seq_num*32+i] = struct.unpack("h", data[(i+1)*2:(i+2)*2])[0]
@@ -68,6 +75,7 @@ def udpListenThread():
 t1 = Thread(target=udpListenThread)
 t1.start()
 print "Listening for incoming packets on UDP port", UDP_REPLY_PORT
+last_packet_arrival_time = time.time()
 
 time.sleep(1)
 
