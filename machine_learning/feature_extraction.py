@@ -13,6 +13,7 @@ from segmentation import segmented_heartbeats
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate
+import pandas as pd
 
 
 # TODO: store reconstructed values in feature vectors
@@ -108,8 +109,8 @@ def dwt_decompose(segmented_heartbeats):
 
     normalized_heartbeats = normalize_heartbeats(segmented_heartbeats)
     # heartbeat_feature_vector
+    heartbeat_feature_vector = []
     for n_heartbeat in normalized_heartbeats:
-        # heartbeat_feature_vector = []
         print("Normalized heartbeat: ", n_heartbeat)
         plot_heartbeat_cycle(n_heartbeat, "Raw Normalized Heartbeat Cycle")
         
@@ -120,7 +121,8 @@ def dwt_decompose(segmented_heartbeats):
         # get all scg values from the heartbeat cycle
         n_scgs = [x[1] for x in n_heartbeat]
         # wavelet = pywt.Wavelet('dmey')
-        for i in range (1, 6): 
+        each_wave_vector = []
+        for i in range (2, 5): 
             
             # coeffs = pywt.wavedec(n_scgs, 'dmey', level=i)
             # cA = coeffs[0]
@@ -133,11 +135,30 @@ def dwt_decompose(segmented_heartbeats):
             cA, cD = coeffs
             # plot_heartbeat_cycle_dwt(cD, "Detailed Coeffecients @ level " + str(i))
             reconstructed_scg_signal = pywt.idwt(cA, cD, 'dmey', 'smooth')
-            plot_heartbeat_cycle_dwt(reconstructed_scg_signal, "Reconstructed SCG Signal @ level " + str(i))
+            # plot_heartbeat_cycle_dwt(reconstructed_scg_signal, "Reconstructed SCG Signal @ level " + str(i))
             n_scgs = cA
-            
-
-dwt_decompose(segmented_heartbeats)
-
+            each_wave_vector.append(reconstructed_scg_signal)
+        heartbeat_feature_vector.append(each_wave_vector)
         
-    
+    print(heartbeat_feature_vector)
+    return heartbeat_feature_vector
+            
+extracted_feature_cycles = dwt_decompose(segmented_heartbeats)
+
+# creates a table of 56 columns
+def create_features_vector(extracted_feature_cycles):
+
+    finalDF = pd.DataFrame()
+    print("len of set: ", len(extracted_feature_cycles))
+    for elemi in extracted_feature_cycles:
+        for elem in elemi:
+            print("len of set: ", len(extracted_feature_cycles))
+            elem = elem[:56]
+            my_array = np.array(elem)
+            df = pd.DataFrame(my_array)
+            df = df.transpose()
+            finalDF = finalDF.append(df, ignore_index = True)
+    finalDF.insert(0, "Type", "1")
+    finalDF.to_csv('temp_testing.csv')
+
+create_features_vector(extracted_feature_cycles)
