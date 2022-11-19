@@ -14,17 +14,18 @@ import numpy as np
 frequency = 160.0
 
 #read in the data
-with open('../heartbeat_values/pankrit_testing.csv', 'r') as f:
+with open('../heartbeat_values/160hz/readings-mustafa-160hz.csv', 'r') as f:
     reader = csv.reader(f)
     heartbeat_secs = list(reader)
     # remove incorrect data (from pressing the left button)
     heartbeat_2secs = [x[10:] for x in heartbeat_secs]
 
-#convert the all the heartbeat_2secs data in each list to floats/100.0
-for i in range(len(heartbeat_2secs)):
-    heartbeat_2secs[i] = [float(x)/100.0 for x in heartbeat_2secs[i]]
-    #print(heartbeat_2secs[i])
-    #print("----------------\n\n")
+def convert_to_floats(heartbeat_2secs):
+    #convert the all the heartbeat_2secs data in each list to floats/100.0
+    for i in range(len(heartbeat_2secs)):
+        heartbeat_2secs[i] = [float(x)/100.0 for x in heartbeat_2secs[i]]
+        #print(heartbeat_2secs[i])
+        #print("----------------\n\n")
 
 #plot the heartbeat data
 def plot_heartbeats_all(heartbeat_2secs):

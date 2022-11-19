@@ -6,6 +6,11 @@ import numpy as np
 import scipy.interpolate
 import pandas as pd
 from sklearn.svm import SVC
+from feature_extraction import create_features_vector
+
+# features vector
+# create_features_vector(extracted_feature_cycles)
+
 
 clf = SVC(kernel='linear')
 

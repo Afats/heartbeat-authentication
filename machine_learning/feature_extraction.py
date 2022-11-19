@@ -159,6 +159,8 @@ def create_features_vector(extracted_feature_cycles):
             df = df.transpose()
             finalDF = finalDF.append(df, ignore_index = True)
     finalDF.insert(0, "Type", "1")
-    finalDF.to_csv('temp_testing.csv')
+    print(finalDF)
+    finalDF.to_csv('temp.csv')
+    return finalDF
 
-create_features_vector(extracted_feature_cycles)
+features_vector = create_features_vector(extracted_feature_cycles)
