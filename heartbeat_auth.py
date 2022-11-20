@@ -22,7 +22,7 @@ user_input = 0
 userAuthenticated = 0
 print("starting the heartbeat authentication...")
 while (user_input != 5):
-    print("1 - Generate training data for authenticates user\n2 - Train Data\n3 - Get new user data\n4 - Predict\n5 - Quit\nEnter operation:",end = "")
+    print("1 - Generate training data for attackers\n2 - Train Data\n3 - Get new user data\n4 - Predict\n5 - Quit\nEnter operation:",end = "")
     user_input = int(input())
 
     if (user_input == 1):
