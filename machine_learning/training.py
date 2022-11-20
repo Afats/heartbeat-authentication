@@ -35,8 +35,8 @@ def authenticate_user(clf, other_file):
     a1 = np.array(x1.loc[:, x1.columns != 'Type'])
 
     # print(a1)
-    print(clf.predict(a1))
-    print(type(clf.predict(a1)))
+    # print(clf.predict(a1))
+    # print(type(clf.predict(a1)))
     return clf.predict(a1)
 
 

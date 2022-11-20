@@ -99,7 +99,7 @@ def interpolate_heartbeats(segmented_heartbeats):
         for i in range(len(segmented_heartbeat)):
             segmented_heartbeat[i] = (segmented_heartbeat[i][0], scgs_new[i])
         
-        plot_heartbeat_cycle(segmented_heartbeat, "Interpolated Heartbeat Cycle")
+        # plot_heartbeat_cycle(segmented_heartbeat, "Interpolated Heartbeat Cycle")
     
 
 # interpolate_heartbeats(segmented_heartbeats)
@@ -112,7 +112,7 @@ def dwt_decompose(segmented_heartbeats):
     heartbeat_feature_vector = []
     for n_heartbeat in normalized_heartbeats:
         print("Normalized heartbeat: ", n_heartbeat)
-        plot_heartbeat_cycle(n_heartbeat, "Raw Normalized Heartbeat Cycle")
+        # plot_heartbeat_cycle(n_heartbeat, "Raw Normalized Heartbeat Cycle")
         
         # By iteratively applying the wavelet decomposition on the approximation coefficients, 
         # the DWT can separate the original signals into multiple levels 
@@ -160,7 +160,7 @@ def create_features_vector(extracted_feature_cycles):
             finalDF = finalDF.append(df, ignore_index = True)
     finalDF.insert(0, "Type", "1")
     print(finalDF)
-    finalDF.to_csv('temp.csv')
+    finalDF.to_csv('tempNils.csv')
     return finalDF
 
 # features_vector = create_features_vector(extracted_feature_cycles)
