@@ -159,6 +159,18 @@ def create_features_vector(extracted_feature_cycles):
             df = df.transpose()
             finalDF = finalDF.append(df, ignore_index = True)
     finalDF.insert(0, "Type", "1")
+
+    counter = 0
+    while (counter <= 37):
+        finalDF.at[counter,'Type'] = 0
+        counter = counter +1
+
+
+    # counter = 0
+    # for col_name, data in df.items():
+	#     if (counter < 57):
+    #         data = 2
+    #     counter = counter + 1
     print(finalDF)
     finalDF.to_csv('tempNils.csv')
     return finalDF
